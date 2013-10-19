@@ -2,6 +2,7 @@
     "name": "blood"
   , "version": "0.0.1"
   , "dependencies": {
-    "ar-drone": "*"
+    "ar-drone": "*",
+	"ffmpeg": "*"
   }
 }
