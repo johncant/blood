@@ -18,12 +18,7 @@ int main(int argc, char ** argv) {
   }
   
   printf("loaded image\n");
-  namedWindow("image", CV_WINDOW_AUTOSIZE);
-  printf("created window\n");
-  imshow("image", img);
-  printf("shown image\n");
-  waitKey(0); 
-  
+
   FastFeatureDetector detector(100);
   vector<KeyPoint> keypoints;
   detector.detect(img, keypoints);
@@ -34,6 +29,37 @@ int main(int argc, char ** argv) {
   drawKeypoints( img, keypoints, img_keypoints, Scalar::all(-1), DrawMatchesFlags::DEFAULT );
   imshow("matches", img_keypoints);
   waitKey(0);
+  
+  // find the top most point.
+  KeyPoint * topMostPoint = NULL;
+  for (int i = 0; i < keypoints.size(); i++) {
+    if(topMostPoint == NULL || keypoints[i].pt.y < topMostPoint->pt.y) {
+      topMostPoint = &keypoints[i];
+    }
+  }
+  // render the top point as a check;
+  vector<KeyPoint> topPoint;
+  topPoint.push_back(*topMostPoint);
+  
+  namedWindow("top match", 1);
+  Mat img_keypoints2;
+  drawKeypoints( img, topPoint, img_keypoints2, Scalar::all(-1), DrawMatchesFlags::DEFAULT );
+  imshow("top match", img_keypoints2);
+  waitKey(0);
+ 
+  // work out how far from the middle it is
+  int midY = img.rows / 2;
+  int midX = img.cols / 2;
+  
+  double diffX = topMostPoint->pt.x - midX;
+  double diffY = topMostPoint->pt.y - midY;
+  
+  printf("images: %d : %d \nkeypoint: %f : %f\ndiff: %f : %f\n", midX, midY, topMostPoint->pt.x, topMostPoint->pt.y, diffX, diffY);
+  
+  
+  // work out where we need to move next to make this in the middle 
+  // (middle for now, we probably want to adjust the target point for the drone and hook combo)
+  
   
   return 0;
 }
